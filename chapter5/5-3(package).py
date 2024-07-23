@@ -51,6 +51,12 @@
 # def echo_test():
 #     print("echo")
 
+# 4. render.py 파일의 내용은 다음과 같이 작성한다.
+
+# # render.py
+# def render_test():
+#     print("render")
+
 # 5. 다음 예제를 수행하기 전에 우리가 만든 game 패키지를 참조할 수 있도록 명령 프롬프트 창에서 set 명령어로 PYTHONPATH 환경 변수에 C:/doit 디렉터리를 추가한다. 
 #    그리고 파이썬 인터프리터를 실행한다.
 
@@ -144,3 +150,131 @@
 # 패키지 내 모듈을 미리 import
 # __init__.py 파일에 패키지 내의 다른 모듈을 미리 import하여 패키지를 사용하는 코드에서 간편하게 접근할 수 있게 한다.
 
+# # C:/doit/game/__init__.py
+# from .graphic.render import render_test
+
+# VERSION = 3.5
+
+# def print_version_info():
+#     print(f"The version of this game is {VERSION}.")
+
+# from .graphic.render import render_test 문장에서 .graphic.render에 사용한 맨 앞의 .은 현재 디렉터리를 의미한다. 
+# 이에 대해서는 뒤에서 자세히 알아본다.
+
+# 이제 패키지를 사용하는 코드에서는 다음과 같이 간편하게 game 패키지를 통해 render_test 함수를 사용할 수 있다.
+
+# >>> import game
+# >>> game.render_test()
+
+######################################
+# 패키지 초기화
+# __ini__.py 파일에 패키지를 처음 불러올 때 실행되어야 하는 코드를 작성할 수 있다. 
+# 예를 들어 데이터베이스 연결이나 설정 파일 로드와 같은 작업을 수행할 수 있다.
+
+# # C:/doit/game/__init__.py
+# from .graphic.render import render_test
+
+# VERSION = 3.5
+
+# def print_version_info():
+#     print(f"The version of this game is {VERSION}.")
+
+# # 여기에 패키지 초기화 코드를 작성한다.
+# print("Initializing game ...")
+
+# 이렇게 하면 패키지를 처음 import할 때 초기화 코드가 실행된다.
+
+# >>> import game
+# Initializing game ...
+# >>>
+
+# game 패키지의 초기화 코드는 game 패키지의 하위 모듈의 함수를 import할 경우에도 실행된다.
+
+# >>> from game.graphic.render import render_test
+# Initializing game ...
+# >>>
+
+#단, 초기화 코드는 한 번 실행된 후에는 다시 import를 수행하더라도 실행되지 않는다. 
+# 예를 들어 다음과 같이 game 패키지를 import한 후에 하위 모듈을 다시 import 하더라도 초기화 코드는 처음 한 번만 실행된다.
+
+# >>> import game
+# Initializing game ...
+# >>> from game.graphic.render import render_test
+# >>>
+
+###################
+# __all__
+# 이번에는 다음을 따라 해 보자.
+
+# >>> from game.sound import *
+# Initializing game ...
+# >>> echo.echo_test()
+# Traceback (most recent call last):
+#     File "<stdin>", line 1, in <module>
+# NameError: name 'echo' is not defined
+
+# 뭔가 이상하지 않은가? 
+# 분명 game.sound 패키지에서 모든 것(*)을 import했으므로 echo 모듈을 사용할 수 있어야 할 것 같은데, echo라는 이름이 정의되지 않았다는 오류가 발생했다.
+
+# 이렇게 특정 디렉터리의 모듈을 *를 사용하여 import할 때는 
+# 다음과 같이 해당 디렉터리의 __init__.py 파일에 __all__ 변수를 설정하고 import할 수 있는 모듈을 정의해 주어야 한다.
+
+# # C:/doit/game/sound/__init__.py
+# __all__ = ['echo']
+
+# 여기에서 __all__이 의미하는 것은 sound 디렉터리에서 *를 사용하여 import할 경우, 이곳에 정의된 echo 모듈만 import된다는 의미이다.
+
+### 착각하기 쉬운데 from game.sound.echo import *은 __all__과 상관없이 import된다. 
+### 이렇게 __all__과 상관없이 무조건 import되는 경우는 from a.b.c import *에서 from의 마지막 항목인 c가 모듈인 때이다.
+
+# 위와 같이 __init__.py 파일을 변경한 후 예제를 수행하면 원하는 결과가 출력되는 것을 확인할 수 있다.
+
+# >>> from game.sound import *
+# Initializing game ...
+# >>> echo.echo_test()
+# echo
+
+#######################################################
+# relative 패키지
+# 만약 graphic 디렉터리의 render.py 모듈에서 sound 디렉터리의 echo.py 모듈을 사용하고 싶다면 어떻게 해야 할까? 
+# 다음과 같이 render.py를 수정하면 가능하다
+
+# # render.py
+# from game.sound.echo import echo_test
+# def render_test():
+#     print("render")
+#     echo_test()
+
+# from game.sound.echo import echo_test 문장을 추가하여 echo_test 함수를 사용할 수 있도록 수정했다.
+
+# 이렇게 수정한 후 다음과 같이 실행해 보자.
+
+# >>> from game.graphic.render import render_test
+# Initializing game ...
+# >>> render_test()
+# render
+# echo
+
+# 이상 없이 잘 수행된다.
+
+# 위 예제처럼 from game.sound.echo import echo_test를 입력해 전체 경로를 사용하여 
+# import할 수도 있지만, 다음과 같이 relative하게 import하는 것도 가능하다.
+
+# # render.py
+# from ..sound.echo import echo_test
+
+# def render_test():
+#     print("render")
+#     echo_test()
+
+# from game.sound.echo import echo_test를 from ..sound.echo import echo_test로 수정했다. 
+# 여기에서 ..은 render.py 파일의 부모 디렉터리를 의미한다. 
+# 따라서 render.py 파일의 부모 디렉터리는 game이므로 위와 같은 import가 가능한 것이다.
+
+# render.py 파일의 현재 디렉터리는 graphic, 부모 디렉터리는 game이다.
+
+# relative한 접근자에는 다음과 같은 것이 있다.
+
+# 접근자	    설명
+#  ..	    부모 디렉터리
+#  .	    현재 디렉터리
