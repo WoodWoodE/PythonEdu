@@ -218,8 +218,35 @@ class Bird:
 
 # NotImplementedError는 파이썬에 이미 정의되어 있는 오류로, 꼭 작성해야 하는 부분이 구현되지 않았을 경우 일부러 오류를 발생시키기 위해 사용한다.
 
+# class Eagle(Bird):
+#     pass
+
+# eagle = Eagle()
+# eagle.fly()
+
+# Eagle 클래스는 Bird 클래스를 상속받았다. 그런데 Eagle 클래스는 fly 메서드를 오버라이딩하여 구현하지 않았다. 
+# 따라서 eagle 객체의 fly 메서드를 수행하는 순간 Bird 클래스의 fly 메서드가 수행되어 NotImplementedError가 발생한다.
+
+# 상속받는 클래스에서 메서드를 재구현하는 것을 ‘메서드 오버라이딩’이라고 한다.
+
+# NotImplementedError가 발생하지 않게 하려면 다음과 같이 Eagle 클래스에 fly 함수를 구현해야 한다.
+
 class Eagle(Bird):
-    pass
+    def fly(self):
+        print("very fast")
 
 eagle = Eagle()
 eagle.fly()
+
+# 위 예처럼 fly 함수를 구현한 후 프로그램을 실행하면 오류 없이 다음 문장이 출력된다.
+
+##################################################################################
+# 예외 만들기
+# 프로그램을 수행하다가 특수한 경우에만 예외 처리를 하려고 종종 예외를 만들어서 사용한다. 
+# 이번에는 직접 예외를 만들어 보자.
+
+# 예외는 다음과 같이 파이썬 내장 클래스인 Exception 클래스를 상속하여 만들 수 있다.
+
+# # error_make.py
+# class MyError(Exception):
+#     pass
