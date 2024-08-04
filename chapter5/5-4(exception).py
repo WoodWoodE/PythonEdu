@@ -51,6 +51,8 @@
 # 위 구문을 보면 []를 사용하는데, 이 기호는 괄호 안의 내용을 생략할 수 있다는 관례적인 표기법이다. 
 # 즉, except 구문은 다음 3가지 방법으로 사용할 수 있다.
 
+# 발생오류는 고정된 값이 존재함 - 맘대로 작성하려고 하면 에러발생, ctrl + space 하면 지정할 수 있는 오류 종류를 보여줌
+
 ###############################################
 # 1. try-except만 쓰는 방법
 
@@ -248,5 +250,80 @@ eagle.fly()
 # 예외는 다음과 같이 파이썬 내장 클래스인 Exception 클래스를 상속하여 만들 수 있다.
 
 # # error_make.py
-# class MyError(Exception):
-#     pass
+class MyError(Exception):
+    pass # 비워두면 에러가 나니까 pass를 넣어줌 별 의미는 없이 그냥 빈칸으로 비워야하는데 에러가 나는거임
+
+#그리고 별명을 출력하는 함수를 다음과 같이 작성해 보자.
+
+def say_nick(nick):
+    if nick == '바보' : 
+        raise MyError()
+    
+    print(nick)
+    
+    
+# 그리고 다음과 같이 say_nick 함수를 호출해 보자.
+    
+# say_nick("천재")
+# say_nick("바보")
+# say_nick("천재")
+
+# 저장한 후 프로그램을 실행해 보면 다음과 같이 "천재"가 한 번 출력된 후 MyError가 발생한다.
+
+# 여기서 내가 확인한 사실은 pass를 사용하는건 그냥 빈칸으로 둘수 없기에 사용한 것이고 
+# MyError()를 호출하면 에러가 발생하는 이유는 raise 때문인데 raise는 뒤에 Exception클래스가 오거나 
+# Exception클래스를 상속받은 클래스가 와야한다고 한다.
+# MyError()를 호출했다고 해서 에러가 발생하는 것이 아니라 raise와 썻기에 에러를 발생시킨거다.
+
+def say_fool(keyword):
+    if keyword == '멍청이':
+        MyError()
+    print(keyword)
+    
+say_fool("천재")    
+say_fool("멍청이")    # => 그냥 호출됨 
+
+def say_fool(keyword):
+    if keyword == '멍청이':
+        raise MyError()
+    print(keyword)
+
+say_fool("천재")    
+# say_fool("멍청이")    # => 에러발생
+
+# 이번에는 예외 처리 기법을 사용하여 MyError 발생을 예외 처리해 보자.
+# try:
+#     say_nick("천재")
+#     say_nick("바보")
+# except MyError : # => 이렇게 Exception을 상속한 클래스 명이 발생오류 라고 보면 된다.
+#     print("허용되지 않은 별명입니다.")
+    
+# 그러면 여기에 에러변수를 사용하기 위해서는 어떻게 해야할까 
+# try:
+#     say_nick("천재")
+#     say_nick("바보")
+# except MyError as e :
+#     print(e)
+    
+#를 사용했을 때 "허용되지 않은 별명입니다."라는 문자열을 출력하게 하고 싶다면 __str__ 메서드를 구현해야 한다
+# __str__ 메서드는 print(e)처럼 오류 메시지를 print 문으로 출력할 경우에 호출되는 메서드이다.
+
+class MyError(Exception):
+    def __str__(self):
+        return "허용되지 않은 별명입니다."
+
+def say_nick(nick):
+    if nick == '바보':
+        raise MyError()
+    print(nick)
+
+try:
+    say_nick("천재")
+    say_nick("바보")
+except MyError as e :
+    print(e)
+
+
+
+
+
